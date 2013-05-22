@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:forgeview="http://jboss.org/forge/view"	
+	template="/resources/scaffold/pageTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="id" value="#{pizzaBean.id}"/>
+		<f:event type="preRenderView" listener="#{pizzaBean.retrieve}"/>
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Create Pizza"/>
+
+	<ui:define name="header">
+		Pizza
+	</ui:define>
+
+	<ui:define name="subheader">
+		<c:choose>
+			<c:when test="#{!empty pizzaBean.id}">
+				Edit existing Pizza
+			</c:when>
+			<c:otherwise>
+				Create a new Pizza
+			</c:otherwise>
+		</c:choose>
+	</ui:define>
+
+	<ui:define name="footer"/>
+
+	<ui:define name="main">
+		<h:form id="create">
+			<h:messages globalOnly="true" styleClass="error"/>
+
+			<h:panelGrid columnClasses="label,component,required" columns="3">
+				<h:outputLabel for="pizzaBeanPizzaName" value="Name:"/>
+				<h:panelGroup>
+					<h:inputText id="pizzaBeanPizzaName" maxLength="2147483647" required="true" value="#{pizzaBean.pizza.name}"/>
+					<h:message for="pizzaBeanPizzaName" styleClass="error"/>
+				</h:panelGroup>
+				<h:outputText value="*"/>
+				<h:outputLabel for="pizzaBeanPizzaPrice" value="Price:"/>
+				<h:panelGroup>
+					<h:inputText id="pizzaBeanPizzaPrice" value="#{pizzaBean.pizza.price}"/>
+					<h:message for="pizzaBeanPizzaPrice" styleClass="error"/>
+				</h:panelGroup>
+				<h:outputText/>
+				<h:outputLabel for="pizzaBeanPizzaToppings" value="Toppings:"/>
+				<h:panelGroup>
+					<ui:param name="_collection" value="#{pizzaBean.pizza.toppings}"/>
+					<h:dataTable id="pizzaBeanPizzaToppings" styleClass="data-table" value="#{forgeview:asList(_collection)}" var="_item">
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="Name"/>
+							</f:facet>
+							<h:link outcome="/topping/view">
+								<f:param name="id" value="#{_item.id}"/>
+								<h:outputText id="itemName" value="#{_item.name}"/>
+							</h:link>
+						</h:column>
+						<h:column footerClass="remove-column" headerClass="remove-column">
+							<h:commandLink action="#{_collection.remove(_item)}" styleClass="remove-button"/>
+						</h:column>
+					</h:dataTable>
+					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
+						<h:selectOneMenu converter="#{toppingBean.converter}" id="pizzaBeanPizzaToppingsSelect" value="#{requestScope['pizzaBeanPizzaToppingsSelect']}">
+							<f:selectItem/>
+							<f:selectItems value="#{toppingBean.all}"/>
+						</h:selectOneMenu>
+						<h:commandLink action="#{_collection.add(requestScope['pizzaBeanPizzaToppingsSelect'])}" id="pizzaBeanPizzaToppingsAdd" onclick="if (document.getElementById(document.forms[0].id+':pizzaBeanPizzaToppingsSelect').selectedIndex &lt; 1) { alert('Must select a Topping'); return false; }" styleClass="add-button"/>
+					</h:panelGrid>
+				</h:panelGroup>
+				<h:outputText/>
+				<h:outputLabel for="pizzaBeanPizzaBase" value="Base:"/>
+				<h:panelGroup>
+					<h:selectOneMenu converter="#{baseBean.converter}" id="pizzaBeanPizzaBase" value="#{pizzaBean.pizza.base}">
+						<f:selectItem/>
+						<f:selectItems value="#{baseBean.all}"/>
+					</h:selectOneMenu>
+					<h:message for="pizzaBeanPizzaBase" styleClass="error"/>
+				</h:panelGroup>
+				<h:outputText/>
+			</h:panelGrid>
+
+			<div class="buttons">
+				<h:commandLink value="Save" action="#{pizzaBean.update}" styleClass="btn btn-primary"/>
+				<c:choose>
+					<c:when test="#{!empty pizzaBean.id}">
+						<h:link value="Cancel" outcome="view" styleClass="btn btn-primary">
+							<f:param name="id" value="#{pizzaBean.id}"/>
+						</h:link>
+						<h:commandLink value="Delete" action="#{pizzaBean.delete}" styleClass="btn btn-primary"/>
+					</c:when>
+					<c:otherwise>
+						<h:link value="Cancel" outcome="search" styleClass="btn btn-primary"/>
+					</c:otherwise>
+				</c:choose>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:forgeview="http://jboss.org/forge/view"
+	template="/resources/scaffold/pageTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="id" value="#{pizzaOrderBean.id}"/>
+		<f:event type="preRenderView" listener="#{pizzaOrderBean.retrieve}"/>
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="View Pizza Order"/>
+
+	<ui:define name="header">
+		Pizza Order
+	</ui:define>
+
+	<ui:define name="subheader">
+		View existing Pizza Order
+	</ui:define>
+
+	<ui:define name="footer"/>
+
+	<ui:define name="main">
+		<h:panelGrid columnClasses="label,component,required" columns="3">
+			<h:outputLabel for="pizzaOrderBeanPizzaOrderName" value="Name:"/>
+			<h:outputText id="pizzaOrderBeanPizzaOrderName" value="#{pizzaOrderBean.pizzaOrder.name}"/>
+			<h:outputText/>
+			<h:outputLabel for="pizzaOrderBeanPizzaOrderAddress" value="Address:"/>
+			<h:outputText id="pizzaOrderBeanPizzaOrderAddress" value="#{pizzaOrderBean.pizzaOrder.address}"/>
+			<h:outputText/>
+			<h:outputLabel for="pizzaOrderBeanPizzaOrderTotal" value="Total:"/>
+			<h:outputText id="pizzaOrderBeanPizzaOrderTotal" value="#{pizzaOrderBean.pizzaOrder.total}"/>
+			<h:outputText/>
+			<h:outputLabel for="pizzaOrderBeanPizzaOrderDeliveryDate" value="Delivery Date:"/>
+			<h:outputText id="pizzaOrderBeanPizzaOrderDeliveryDate" value="#{pizzaOrderBean.pizzaOrder.deliveryDate}">
+				<f:convertDateTime type="date"/>
+			</h:outputText>
+			<h:outputText/>
+			<h:outputLabel for="pizzaOrderBeanPizzaOrderPizzas" value="Pizzas:"/>
+			<h:dataTable id="pizzaOrderBeanPizzaOrderPizzas" styleClass="data-table" value="#{forgeview:asList(pizzaOrderBean.pizzaOrder.pizzas)}" var="_item">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Name"/>
+					</f:facet>
+					<h:link outcome="/pizza/view">
+						<f:param name="id" value="#{_item.id}"/>
+						<h:outputText id="itemName" value="#{_item.name}"/>
+					</h:link>
+				</h:column>
+			</h:dataTable>
+			<h:outputText/>
+		</h:panelGrid>
+
+		<div class="buttons">
+			<h:link value="View All" outcome="search" styleClass="btn btn-primary"/> 
+			<h:link value="Edit" outcome="create" includeViewParams="true" styleClass="btn btn-primary"/>
+			<h:link value="Create New" outcome="create" styleClass="btn btn-primary"/>
+		</div>
+	</ui:define>
+
+</ui:composition>
